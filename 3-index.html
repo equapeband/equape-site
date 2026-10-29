@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>equape</title>
+<meta name="description" content="LÆGHTs by equape. Out now, streaming everywhere.">
+<meta property="og:title" content="equape">
+<meta property="og:description" content="LÆGHTs out now, streaming everywhere.">
+<meta property="og:image" content="cover.jpg">
+<style>
+*{box-sizing:border-box}
+html,body{margin:0;background:#0d0c10;color:#efeaf4;font-family:"Helvetica Neue",Helvetica,Arial,sans-serif}
+body{min-height:100vh;background:radial-gradient(120% 60% at 50% 0%,#2a2140 0%,#0d0c10 70%) no-repeat}
+main{max-width:520px;margin:0 auto;padding:56px 24px 40px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.mark{margin:0 0 28px;font-size:15px;letter-spacing:.42em;text-indent:.42em;color:#b9aed0}
+.cover{width:min(100%,340px);height:auto;aspect-ratio:1;object-fit:cover;border-radius:6px;box-shadow:0 24px 80px rgba(150,120,220,.28)}
+h1{margin:28px 0 8px;font-size:44px;font-weight:500;letter-spacing:.08em;text-indent:.08em;line-height:1.15;color:#fff}
+.line{margin:0 0 28px;color:#a79bbd;font-size:15px}
+.player{width:100%;border:0;border-radius:12px;margin-bottom:20px}
+.buttons{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-bottom:36px}
+.btn{display:inline-flex;align-items:center;min-height:46px;padding:0 22px;border-radius:999px;border:1px solid #5b4f78;color:#efeaf4;text-decoration:none;font-size:15px}
+.btn.primary{background:#efeaf4;color:#0d0c10;border-color:#efeaf4}
+.btn:focus-visible,.follow a:focus-visible{outline:2px solid #b9aed0;outline-offset:3px}
+.follow{list-style:none;margin:0;padding:0;width:100%;border-top:1px solid #2c2640}
+.follow li{border-bottom:1px solid #2c2640}
+.follow a{display:flex;justify-content:space-between;align-items:center;min-height:48px;color:#efeaf4;text-decoration:none;font-size:15px}
+.follow em{font-style:normal;color:#8f84a6}
+@media(min-width:768px){main{padding-top:88px}h1{font-size:56px}}
+
+/* swarm: procedural canvas animation (not a video file) */
+body{position:relative;overflow-x:hidden}
+#swarm{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none}
+main{position:relative;z-index:1}
+</style>
+</head>
+<body>
+<canvas id="swarm" aria-hidden="true"></canvas>
+<main>
+  <p class="mark">equape</p>
+  <img class="cover" src="cover.jpg" alt="Cover art for LÆGHTs by equape" width="640" height="640">
+  <h1>LÆGHTs</h1>
+  <p class="line">out now, streaming everywhere</p>
+  <!-- Spotify's own embed player. Third-party: loads from open.spotify.com when a visitor opens the page. -->
+  <iframe class="player" title="LÆGHTs by equape on Spotify" src="https://open.spotify.com/embed/track/0e68Nr2NO1Bt3XMEKvXFik?theme=0" height="152" allow="encrypted-media" loading="lazy"></iframe>
+  <div class="buttons">
+    <a class="btn primary" href="https://open.spotify.com/track/0e68Nr2NO1Bt3XMEKvXFik" rel="noopener">Play on Spotify</a>
+    <a class="btn" href="https://music.apple.com/us/artist/equape/938867494" rel="noopener">Listen on Apple Music</a>
+  </div>
+  <ul class="follow" aria-label="Follow equape">
+    <li><a href="https://www.tiktok.com/@equape" rel="noopener"><span>TikTok</span><em>@equape</em></a></li>
+    <li><a href="https://www.instagram.com/equapemusic/" rel="noopener"><span>Instagram</span><em>@equapemusic</em></a></li>
+    <li><a href="https://open.spotify.com/artist/5SkE0vWLfe4WwHO41Xz1Ib" rel="noopener"><span>Spotify artist page</span><em>equape</em></a></li>
+  </ul>
+</main>
+<script>
+// equape swarm: procedural canvas animation (not a video file). A small crisp cluster of insect-like specks drifting slowly. No blur.
+function startSwarm(canvas, opts) {
+  var ctx = canvas.getContext('2d');
+  var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var N = (opts && opts.count) || 420;
+  var P = [], seed = 11;
+  function rnd() { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; }
+  for (var i = 0; i < N; i++) {
+    var loose = rnd() < 0.14;
+    P.push({ a: rnd() * 6.2832, r: (loose ? 1.4 + rnd() * 1.6 : Math.pow(rnd(), 0.8) * 1.1), w: (0.25 + rnd() * 0.6) * (rnd() < 0.5 ? -1 : 1), f: 0.3 + rnd() * 0.9, o: rnd() * 6.2832, s: rnd() < 0.2 ? 3 : 2, hue: rnd() });
+  }
+  var w = 0, h = 0, dpr = 1, raf = 0, t0 = performance.now();
+  function size() {
+    var r = canvas.getBoundingClientRect(); dpr = Math.min(window.devicePixelRatio || 1, 2);
+    w = Math.max(1, Math.round(r.width * dpr)); h = Math.max(1, Math.round(r.height * dpr));
+    canvas.width = w; canvas.height = h;
+  }
+  function draw(now) {
+    var qt = /[?&]t=([\d.]+)/.exec(location.search), t = qt ? parseFloat(qt[1]) : (reduce ? 3 : (now - t0) / 1000);
+    var m = Math.min(w, h), base = m * 0.16;
+    // slow wandering centre, like a drifting cursor
+    var cx = w * (0.5 + 0.34 * Math.sin(t * 0.09 + 0.6) + 0.08 * Math.sin(t * 0.23)), cy = h * (0.5 + 0.30 * Math.sin(t * 0.07 + 2.1) + 0.07 * Math.sin(t * 0.19 + 1));
+    var breathe = 1 + 0.07 * Math.sin(t * 1.4);
+    ctx.clearRect(0, 0, w, h);
+    for (var i = 0; i < N; i++) {
+      var p = P[i], ang = p.a + t * p.w, rad = base * p.r * breathe * (1 + 0.25 * Math.sin(t * p.f + p.o));
+      var lag = p.r > 1.3 ? 0.6 : 0; // loose ones trail behind the centre a little
+      var lx = lag ? (Math.sin((t - 1.5) * 0.09 + 0.6) - Math.sin(t * 0.09 + 0.6)) * w * 0.34 * lag : 0;
+      var x0 = cx + lx + Math.cos(ang) * rad * 1.2, y0 = cy + Math.sin(ang + p.o) * rad * 0.9; /* slow travelling wave */ var x = Math.round(x0 + Math.sin(y0 / (m * 0.09) - t * 0.7) * base * 0.22), y = Math.round(y0 + Math.sin(x0 / (m * 0.11) + t * 0.55) * base * 0.3);
+      var sz = Math.max(1, Math.round(p.s * dpr * 0.8));
+      ctx.fillStyle = p.hue > 0.85 ? 'rgba(240,170,200,0.95)' : 'rgba(215,200,250,' + (0.55 + 0.45 * p.hue) + ')';
+      ctx.fillRect(x, y, sz, sz);
+    }
+  }
+  function loop(now) { draw(now); raf = requestAnimationFrame(loop); }
+  size(); window.addEventListener('resize', function () { size(); if (reduce) draw(0); });
+  if (reduce) { draw(0); } else { raf = requestAnimationFrame(loop); }
+  document.addEventListener('visibilitychange', function () { if (reduce) return; if (document.hidden) cancelAnimationFrame(raf); else raf = requestAnimationFrame(loop); });
+  return { draw: draw, stop: function () { cancelAnimationFrame(raf); } };
+}
+
+startSwarm(document.getElementById("swarm"));
+</script>
+</body>
+</html>
