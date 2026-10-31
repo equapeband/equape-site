@@ -27,6 +27,11 @@ h1{margin:28px 0 8px;font-size:44px;font-weight:500;letter-spacing:.08em;text-in
 .follow a{display:flex;justify-content:space-between;align-items:center;min-height:48px;color:#efeaf4;text-decoration:none;font-size:15px}
 .follow em{font-style:normal;color:#8f84a6}
 @media(min-width:768px){main{padding-top:88px}h1{font-size:56px}}
+@media(min-width:768px){
+.cover{width:min(100vw,1480px);max-width:none;height:auto;aspect-ratio:1480/640;border-radius:0;box-shadow:none}
+main{padding-top:40px}
+.mark{margin-bottom:36px}
+}
 
 /* swarm: procedural canvas animation (not a video file) */
 body{position:relative;overflow-x:hidden}
@@ -38,7 +43,10 @@ main{position:relative;z-index:1}
 <canvas id="swarm" aria-hidden="true"></canvas>
 <main>
   <p class="mark">equape</p>
-  <img class="cover" src="4-cover.jpg" alt="Cover art for LÆGHTs by equape" width="640" height="640">
+  <picture>
+    <source media="(min-width:768px)" srcset="4-banner.jpg" width="1480" height="640">
+    <img class="cover" src="4-cover.jpg" alt="Cover art for LÆGHTs by equape" width="640" height="640">
+  </picture>
   <h1>LÆGHTs</h1>
   <p class="line">out now, streaming everywhere</p>
   <!-- Spotify's own embed player. Third-party: loads from open.spotify.com when a visitor opens the page. -->
